@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import TopNav from '../../components/TopNav';
 import { LocationOn, Star, Edit, Inventory, Favorite } from '@mui/icons-material';
 import { getProfileService, getUserItemsService, getMeService, ProfileResponse, Review } from '../../services';
@@ -7,6 +7,7 @@ import './Profile.css';
 
 const Profile: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [userItems, setUserItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,7 +70,21 @@ const Profile: React.FC = () => {
     return (
       <div className="profile-screen">
         <TopNav />
-        <div style={{ textAlign: 'center', padding: '40px' }}>Carregando...</div>
+        <div className="sk-profile">
+          <div className="sk sk-circle sk-profile-avatar" />
+          <div className="sk sk-text-lg" style={{ width: 160 }} />
+          <div className="sk sk-text" style={{ width: 120 }} />
+          <div className="sk-profile-stats">
+            <div className="sk sk-profile-stat" />
+            <div className="sk sk-profile-stat" />
+            <div className="sk sk-profile-stat" />
+          </div>
+          <div className="sk-profile-items">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="sk sk-profile-item" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -91,12 +106,12 @@ const Profile: React.FC = () => {
           <div className="profile-header">
             <div className="profile-avatar">
               {profile.avatar_url ? (
-                <img src={profile.avatar_url} alt={profile.name} />
+                <img src={profile.avatar_url} alt={profile.name || ''} />
               ) : (
-                profile.name.charAt(0)
+                (profile.name || '?').charAt(0)
               )}
             </div>
-            <h1 className="profile-name">{profile.name}</h1>
+            <h1 className="profile-name">{profile.name || 'Usuário'}</h1>
             <div className="profile-info">
               {profile.location && (
                 <div className="profile-location">
@@ -124,7 +139,7 @@ const Profile: React.FC = () => {
               </div>
             )}
           </div>
-          <div className="stat-card">
+          <div className="stat-card stat-card-clickable" onClick={() => navigate('/my-listings')}>
             <div className="stat-icon">
               <Inventory />
             </div>
@@ -145,7 +160,7 @@ const Profile: React.FC = () => {
             <Edit />
             <span>Editar perfil</span>
           </button>
-          <button className="btn btn-action">
+          <button className="btn btn-action" onClick={() => navigate('/my-listings')}>
             <Inventory />
             <span>Meus anúncios</span>
           </button>

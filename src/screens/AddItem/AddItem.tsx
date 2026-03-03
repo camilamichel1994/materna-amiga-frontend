@@ -1,9 +1,10 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TopNav from '../../components/TopNav';
-import { CameraAlt, Add, Close } from '@mui/icons-material';
+import { CameraAlt, Close, LocationOn } from '@mui/icons-material';
 import { createListingService, CreateListingInput } from '../../services';
+import { getUserCity } from '../../utils/geolocation';
 import './AddItem.css';
 
 type ListingType = 'doar' | 'trocar' | 'vender';
@@ -14,6 +15,7 @@ interface FormData {
   state: string;
   listingType: ListingType;
   price: string;
+  city: string;
   message: string;
   images: File[];
 }
@@ -26,10 +28,31 @@ const AddItem: React.FC = () => {
     state: '',
     listingType: 'vender',
     price: '',
+    city: '',
     message: '',
     images: []
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+
+  useEffect(() => {
+    detectLocation();
+  }, []);
+
+  const detectLocation = async () => {
+    setIsLoadingLocation(true);
+    try {
+      const location = await getUserCity();
+      setFormData((prev) => ({
+        ...prev,
+        city: location.city,
+      }));
+    } catch (error) {
+      console.warn('Não foi possível detectar a localização:', error);
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
@@ -125,7 +148,7 @@ const AddItem: React.FC = () => {
         condition: formData.state as 'Novo' | 'Usado - Excelente' | 'Usado - Bom' | 'Usado - Regular',
         listingType: listingTypeMap[formData.listingType],
         price: price,
-        city: 'São Paulo',
+        city: formData.city || undefined,
         message: formData.message || undefined,
         photos: photos
       };
@@ -148,211 +171,121 @@ const AddItem: React.FC = () => {
     });
   };
 
-  const mainImage = formData.images[0] || null;
-  const hasAdditionalImages = formData.images.length > 1;
-
   return (
     <div className="add-item-screen">
       <TopNav />
-      <div className="add-item-container">
-        <form onSubmit={handleSubmit} className="add-item-layout">
-          <div className="image-upload-section">
-            <h2 className="section-title">Fotos do produto <span className="photo-limit-label"></span></h2>
-            
-            <div className="main-image-upload">
-              {mainImage ? (
-                <div className="main-image-preview">
-                  <button
-                    type="button"
-                    className="remove-main-image"
-                    onClick={() => removeImage(0)}
-                  >
+      <form onSubmit={handleSubmit} className="add-item-form">
+        {/* HEADER */}
+        <div className="add-item-header">
+          <h1>Novo Anúncio</h1>
+          <button type="submit" className="btn-publish" disabled={isLoading}>
+            {isLoading ? 'Publicando...' : 'Publicar'}
+          </button>
+        </div>
+
+        {/* GRID PRINCIPAL */}
+        <div className="add-item-grid">
+          {/* PAINEL FOTOS */}
+          <div className="panel panel-photos">
+            <div className="panel-label">
+              Fotos <span className="photo-counter">{formData.images.length}/{MAX_PHOTOS}</span>
+            </div>
+            <div className="photos-gallery">
+              {formData.images.map((image, index) => (
+                <div key={index} className={`photo-cell ${index === 0 ? 'photo-cell-main' : ''}`}>
+                  <img src={URL.createObjectURL(image)} alt={`Foto ${index + 1}`} />
+                  <button type="button" className="photo-remove" onClick={() => removeImage(index)}>
                     <Close />
                   </button>
-                  <div className="image-preview-content">
-                    <img src={URL.createObjectURL(mainImage)} alt="Preview" />
-                  </div>
+                  {index === 0 && <span className="photo-badge-main">Principal</span>}
                 </div>
-              ) : (
-                <label className="main-image-upload-area">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="file-input-hidden"
-                  />
-                  <div className="upload-placeholder">
-                    <CameraAlt className="camera-icon" />
-                    <div className="upload-text">Clique para adicionar foto principal</div>
-                  </div>
-                </label>
-              )}
-            </div>
-
-            <div className="additional-image-upload">
-              {hasAdditionalImages ? (
-                <div className="additional-images-grid">
-                  {formData.images.slice(1).map((image, index) => (
-                    <div key={index + 1} className="additional-image-preview">
-                      <button
-                        type="button"
-                        className="remove-additional-image"
-                        onClick={() => removeImage(index + 1)}
-                      >
-                        <Close />
-                      </button>
-                      <img src={URL.createObjectURL(image)} alt={`Additional ${index + 1}`} />
-                    </div>
-                  ))}
-                  {formData.images.length < 5 && (
-                    <label className="add-additional-image-btn">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="file-input-hidden"
-                        multiple
-                      />
-                      <Add className="add-icon" />
-                    </label>
-                  )}
-                </div>
-              ) : (
-                <label className="add-additional-image-btn">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="file-input-hidden"
-                    multiple
-                  />
-                  <Add className="add-icon" />
+              ))}
+              {formData.images.length < MAX_PHOTOS && (
+                <label className={`photo-cell photo-cell-add ${formData.images.length === 0 ? 'photo-cell-empty' : ''}`}>
+                  <input type="file" accept="image/*" onChange={handleImageChange} className="file-input-hidden" multiple />
+                  <CameraAlt />
+                  <span>Adicionar</span>
                 </label>
               )}
             </div>
           </div>
 
-          <div className="form-section">
-            <div className="form-group">
-              <label htmlFor="name">Nome do produto</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                className="input"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                placeholder="Digite o nome do produto"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="description">Descrição</label>
-              <textarea
-                id="description"
-                name="description"
-                className="input textarea"
-                value={formData.description}
-                onChange={handleChange}
-                required
-                rows={2}
-                placeholder="Descreva o item, incluindo marca, modelo, condições de uso..."
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="state">Estado do produto</label>
-              <select
-                id="state"
-                name="state"
-                className="input"
-                value={formData.state}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Selecione</option>
-                <option value="Novo">Novo</option>
-                <option value="Usado - Excelente">Usado - Excelente</option>
-                <option value="Usado - Bom">Usado - Bom</option>
-                <option value="Usado - Regular">Usado - Regular</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <span className="radio-label">O que você deseja fazer com este item?</span>
-              <div className="radio-group">
-                <label className="radio-option">
-                  <input
-                    type="radio"
-                    name="listingType"
-                    value="doar"
-                    checked={formData.listingType === 'doar'}
-                    onChange={handleChange}
-                  />
-                  <span>Doar</span>
-                </label>
-                <label className="radio-option">
-                  <input
-                    type="radio"
-                    name="listingType"
-                    value="trocar"
-                    checked={formData.listingType === 'trocar'}
-                    onChange={handleChange}
-                  />
-                  <span>Trocar</span>
-                </label>
-                <label className="radio-option">
-                  <input
-                    type="radio"
-                    name="listingType"
-                    value="vender"
-                    checked={formData.listingType === 'vender'}
-                    onChange={handleChange}
-                  />
-                  <span>Vender</span>
-                </label>
+          {/* PAINEL DETALHES */}
+          <div className="panel panel-details">
+            <div className="panel-label">Detalhes do produto</div>
+            <div className="fields-grid">
+              <div className="field field-name">
+                <label htmlFor="name">Nome do produto</label>
+                <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required placeholder="Ex: Carrinho de bebê Chicco" />
+              </div>
+              <div className="field field-state">
+                <label htmlFor="state">Estado</label>
+                <select id="state" name="state" value={formData.state} onChange={handleChange} required>
+                  <option value="">Selecione</option>
+                  <option value="Novo">Novo</option>
+                  <option value="Usado - Excelente">Usado - Excelente</option>
+                  <option value="Usado - Bom">Usado - Bom</option>
+                  <option value="Usado - Regular">Usado - Regular</option>
+                </select>
+              </div>
+              <div className="field field-desc">
+                <label htmlFor="description">Descrição</label>
+                <textarea id="description" name="description" value={formData.description} onChange={handleChange} required rows={4} placeholder="Marca, modelo, condições de uso..." />
               </div>
             </div>
+          </div>
 
+          {/* PAINEL TIPO + PREÇO */}
+          <div className="panel panel-type">
+            <div className="panel-label">Tipo e valor</div>
+            <div className="type-pills">
+              <label className={`pill ${formData.listingType === 'doar' ? 'pill-active' : ''}`}>
+                <input type="radio" name="listingType" value="doar" checked={formData.listingType === 'doar'} onChange={handleChange} />
+                Doar
+              </label>
+              <label className={`pill ${formData.listingType === 'trocar' ? 'pill-active' : ''}`}>
+                <input type="radio" name="listingType" value="trocar" checked={formData.listingType === 'trocar'} onChange={handleChange} />
+                Trocar
+              </label>
+              <label className={`pill ${formData.listingType === 'vender' ? 'pill-active' : ''}`}>
+                <input type="radio" name="listingType" value="vender" checked={formData.listingType === 'vender'} onChange={handleChange} />
+                Vender
+              </label>
+            </div>
             {formData.listingType === 'vender' && (
-              <div className="form-group">
+              <div className="field field-price">
                 <label htmlFor="price">Preço (R$)</label>
-                <input
-                  type="text"
-                  id="price"
-                  name="price"
-                  className="input"
-                  value={formData.price}
-                  onChange={handleChange}
-                  placeholder="Ex: 350,00"
-                />
+                <input type="text" id="price" name="price" value={formData.price} onChange={handleChange} placeholder="350,00" />
               </div>
             )}
-
-            <div className="form-group">
-              <label htmlFor="message">Mensagem (Opcional)</label>
-              <textarea
-                id="message"
-                name="message"
-                className="input textarea"
-                value={formData.message}
-                onChange={handleChange}
-                rows={2}
-                placeholder="Informações adicionais sobre o produto..."
-              />
-            </div>
-
-            <button 
-              type="submit" 
-              className="btn btn-publish"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Publicando...' : 'Publicar'}
-            </button>
           </div>
-        </form>
-      </div>
+
+          {/* PAINEL LOCALIZAÇÃO */}
+          <div className="panel panel-location">
+            <div className="panel-label">
+              Localização
+              {isLoadingLocation && <span className="location-loading">detectando...</span>}
+            </div>
+            <div className="city-input-wrapper">
+              <LocationOn className="city-input-icon" />
+              <input type="text" id="city" name="city" value={formData.city} onChange={handleChange} placeholder="Sua cidade" />
+            </div>
+          </div>
+
+          {/* PAINEL OBSERVAÇÕES */}
+          <div className="panel panel-obs">
+            <div className="panel-label">Observações</div>
+            <textarea id="message" name="message" value={formData.message} onChange={handleChange} rows={3} placeholder="Informações adicionais para o comprador..." />
+          </div>
+        </div>
+
+        {/* BOTÃO MOBILE */}
+        <div className="publish-mobile">
+          <button type="submit" className="btn-publish" disabled={isLoading}>
+            {isLoading ? 'Publicando...' : 'Publicar Anúncio'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

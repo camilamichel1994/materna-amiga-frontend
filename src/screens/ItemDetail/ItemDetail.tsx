@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TopNav from '../../components/TopNav';
 import { Favorite, FavoriteBorder, ExpandMore, ExpandLess, LocationOn, Person, Star, Chat } from '@mui/icons-material';
-import { getListingByIdService, getSimilarListingsService, addFavoriteService, removeFavoriteService, createChatService, getMeService, Listing } from '../../services';
+import { getListingByIdService, getSimilarListingsService, addFavoriteService, removeFavoriteService, getFavoritesService, createChatService, getMeService, Listing } from '../../services';
 import { formatCurrency, getImageUrl, getListingTypeLabel } from '../../utils/format';
 import './ItemDetail.css';
 
@@ -29,8 +29,19 @@ const ItemDetail: React.FC = () => {
     if (id) {
       loadItem();
       loadSimilarItems();
+      checkIfFavorite(id);
     }
   }, [id]);
+
+  const checkIfFavorite = async (itemId: string) => {
+    try {
+      const favorites = await getFavoritesService();
+      const found = favorites.some(fav => fav.item?.id === itemId);
+      setIsFavorite(found);
+    } catch {
+      // ignore - user may not be logged in
+    }
+  };
 
   useEffect(() => {
     if (item?.description) {
@@ -113,7 +124,33 @@ const ItemDetail: React.FC = () => {
     return (
       <div className="item-detail-screen">
         <TopNav />
-        <div style={{ textAlign: 'center', padding: '40px' }}>Carregando...</div>
+        <div className="item-detail-container">
+          <div className="sk-detail-layout">
+            <div style={{ width: '50%', flexShrink: 0 }}>
+              <div className="sk sk-detail-image" />
+              <div className="sk-detail-thumbs">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="sk sk-detail-thumb" />
+                ))}
+              </div>
+            </div>
+            <div className="sk-detail-info">
+              <div className="sk sk-text-lg" style={{ width: '60%' }} />
+              <div className="sk sk-text-lg" style={{ width: '30%' }} />
+              <div className="sk sk-text" style={{ width: '45%' }} />
+              <div className="sk-detail-seller">
+                <div className="sk sk-circle" style={{ width: 44, height: 44 }} />
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div className="sk sk-text" style={{ width: '50%' }} />
+                  <div className="sk sk-text-sm" style={{ width: '30%' }} />
+                </div>
+              </div>
+              <div className="sk sk-text" style={{ width: '100%' }} />
+              <div className="sk sk-text" style={{ width: '90%' }} />
+              <div className="sk sk-text" style={{ width: '70%' }} />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -128,7 +165,7 @@ const ItemDetail: React.FC = () => {
   }
 
   const images = item.images ?? item.photos ?? [];
-  const seller = item.seller || { name: 'Vendedor', rating: 0 };
+  const seller = item.seller || { name: 'Anônimo', rating: 0 };
   const condition = item.condition ?? (seller as { state?: string }).state ?? '';
   const location = item.location ?? item.city ?? '';
 

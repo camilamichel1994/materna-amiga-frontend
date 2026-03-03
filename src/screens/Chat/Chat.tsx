@@ -133,7 +133,7 @@ const Chat: React.FC = () => {
           </div>
         </div>
         <div className="messages-container">
-          {messages.map(msg => {
+          {[...messages].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map(msg => {
             const isMe = msg.sender_id === currentUserId;
             return (
               <div key={msg.id} className={`message ${isMe ? 'me' : 'other'}`}>
@@ -168,8 +168,16 @@ const Chat: React.FC = () => {
         </div>
         <div className="chat-list" role="list">
           {isLoading ? (
-            <div className="empty-state">
-              <p>Carregando...</p>
+            <div className="sk-chat-list">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="sk-chat-item">
+                  <div className="sk sk-circle sk-chat-avatar" />
+                  <div className="sk-chat-lines">
+                    <div className="sk sk-text" style={{ width: '45%' }} />
+                    <div className="sk sk-text-sm" style={{ width: '70%' }} />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : chats.length === 0 ? (
             <div className="empty-state">

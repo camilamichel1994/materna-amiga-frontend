@@ -1,0 +1,529 @@
+.my-listings-screen {
+  background-color: var(--light-gray);
+  min-height: 100vh;
+  padding-top: 60px;
+}
+
+.my-listings-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.my-listings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.my-listings-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--dark-gray);
+  margin: 0;
+}
+
+.my-listings-header .btn-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #bab1ea 0%, #9d92d8 100%);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.my-listings-header .btn-add:hover {
+  box-shadow: 0 4px 12px rgba(186, 177, 234, 0.4);
+  transform: translateY(-1px);
+}
+
+.my-listings-header .btn-add svg {
+  font-size: 20px !important;
+}
+
+.my-listings-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--dark-gray);
+}
+
+.my-listings-empty {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.my-listings-empty-icon svg {
+  font-size: 64px !important;
+  color: #bab1ea !important;
+  opacity: 0.5;
+}
+
+.my-listings-empty h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin: 16px 0 8px;
+}
+
+.my-listings-empty p {
+  font-size: 14px;
+  color: var(--dark-gray);
+  opacity: 0.7;
+  margin-bottom: 24px;
+}
+
+.my-listings-empty .btn-add-first {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #bab1ea 0%, #9d92d8 100%);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.my-listings-empty .btn-add-first:hover {
+  box-shadow: 0 4px 12px rgba(186, 177, 234, 0.4);
+}
+
+/* Lista de anúncios */
+.my-listings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.my-listing-card {
+  display: flex;
+  background-color: var(--white);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.my-listing-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.my-listing-image {
+  width: 160px;
+  min-width: 160px;
+  height: 140px;
+  background-color: #f0eef5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.my-listing-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.my-listing-image-placeholder {
+  color: #bbb;
+  font-size: 13px;
+}
+
+.my-listing-content {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.my-listing-type-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  background: rgba(186, 177, 234, 0.15);
+  color: #9d92d8;
+  margin-bottom: 4px;
+}
+
+.my-listing-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin: 0 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.my-listing-details {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+  color: var(--dark-gray);
+  opacity: 0.7;
+}
+
+.my-listing-price {
+  font-weight: 700;
+  color: var(--dark-gray);
+  opacity: 1;
+}
+
+.my-listing-date {
+  font-size: 12px;
+}
+
+.my-listing-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+.my-listing-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(186, 177, 234, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #9d92d8;
+}
+
+.my-listing-actions button:hover {
+  background: rgba(186, 177, 234, 0.25);
+  color: #7b6fb5;
+}
+
+.my-listing-actions button:active {
+  background: rgba(186, 177, 234, 0.4);
+  transform: scale(0.95);
+}
+
+.my-listing-actions button svg {
+  font-size: 24px !important;
+}
+
+/* Modal de confirmação de exclusão */
+.delete-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.delete-modal {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.delete-modal-icon {
+  margin-bottom: 16px;
+}
+
+.delete-modal-icon svg {
+  font-size: 48px !important;
+  color: #bab1ea !important;
+}
+
+.delete-modal h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin: 0 0 8px;
+}
+
+.delete-modal p {
+  font-size: 14px;
+  color: var(--dark-gray);
+  opacity: 0.7;
+  margin: 0 0 24px;
+}
+
+.delete-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.delete-modal-actions button {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  border: none;
+}
+
+.btn-cancel-delete {
+  background: var(--light-gray);
+  color: var(--dark-gray);
+}
+
+.btn-cancel-delete:hover {
+  background: #e0e0e0;
+}
+
+.btn-confirm-delete {
+  background: linear-gradient(135deg, #bab1ea 0%, #9d92d8 100%);
+  color: var(--white);
+}
+
+.btn-confirm-delete:hover {
+  background: linear-gradient(135deg, #a99fdf 0%, #8b80cc 100%);
+  box-shadow: 0 2px 8px rgba(186, 177, 234, 0.4);
+}
+
+.btn-confirm-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Modal de edição */
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease;
+  padding: 20px;
+}
+
+.edit-modal {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 520px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.edit-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.edit-modal-header h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--dark-gray);
+  margin: 0;
+}
+
+.edit-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: var(--light-gray);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--dark-gray);
+}
+
+.edit-modal-close:hover {
+  background: #e0e0e0;
+}
+
+.edit-form-group {
+  margin-bottom: 18px;
+}
+
+.edit-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 6px;
+}
+
+.edit-form-group input,
+.edit-form-group textarea,
+.edit-form-group select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-gray);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--dark-gray);
+  background: var(--white);
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.edit-form-group input:focus,
+.edit-form-group textarea:focus,
+.edit-form-group select:focus {
+  border-color: #bab1ea;
+}
+
+.edit-form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.edit-modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.edit-modal-actions button {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  border: none;
+}
+
+.btn-cancel-edit {
+  background: var(--light-gray);
+  color: var(--dark-gray);
+}
+
+.btn-cancel-edit:hover {
+  background: #e0e0e0;
+}
+
+.btn-save-edit {
+  background: linear-gradient(135deg, #bab1ea 0%, #9d92d8 100%);
+  color: var(--white);
+}
+
+.btn-save-edit:hover {
+  box-shadow: 0 4px 12px rgba(186, 177, 234, 0.4);
+}
+
+.btn-save-edit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Paginação */
+.my-listings-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.my-listings-pagination button {
+  padding: 10px 20px;
+  border: 1px solid var(--border-gray);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--dark-gray);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.my-listings-pagination button:hover:not(:disabled) {
+  border-color: #bab1ea;
+  color: #bab1ea;
+}
+
+.my-listings-pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.my-listings-pagination .page-info {
+  font-size: 14px;
+  color: var(--dark-gray);
+  opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  .my-listings-container {
+    padding: 20px 16px;
+  }
+
+  .my-listings-header h1 {
+    font-size: 22px;
+  }
+
+  .my-listing-card {
+    flex-direction: column;
+  }
+
+  .my-listing-image {
+    width: 100%;
+    height: 180px;
+  }
+
+  .my-listing-actions {
+    padding: 8px 16px 16px;
+    justify-content: flex-end;
+  }
+}

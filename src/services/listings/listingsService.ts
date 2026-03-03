@@ -119,6 +119,31 @@ export const deleteListingService = async (id: string): Promise<void> => {
   });
 };
 
+export interface MyListingsQueryParams {
+  page?: number;
+  limit?: number;
+  sortBy?: 'createdAt' | 'price' | 'rating';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export const getMyListingsService = async (params?: MyListingsQueryParams): Promise<ListingsResponse> => {
+  const queryString = new URLSearchParams();
+
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        queryString.append(key, String(value));
+      }
+    });
+  }
+
+  const endpoint = `/listings/me${queryString.toString() ? `?${queryString.toString()}` : ''}`;
+  return apiRequest<ListingsResponse>(endpoint, {
+    method: 'GET',
+    requireAuth: true,
+  });
+};
+
 export const getSimilarListingsService = async (id: string): Promise<Listing[]> => {
   const response = await apiRequest<Listing[]>(`/listings/${id}/similar`, {
     method: 'GET',

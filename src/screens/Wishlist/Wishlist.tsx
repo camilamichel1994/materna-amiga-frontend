@@ -149,9 +149,18 @@ const Wishlist: React.FC = () => {
 
         <div className="wishlist-grid">
           {isLoading && favorites.length === 0 ? (
-            <div className="empty-state">
-              <p>Carregando...</p>
-            </div>
+            <>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="wish-card" style={{ pointerEvents: 'none' }}>
+                  <div className="sk" style={{ width: '100%', height: 200, borderRadius: 0 }} />
+                  <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div className="sk sk-text" style={{ width: '75%' }} />
+                    <div className="sk sk-text-lg" style={{ width: '45%' }} />
+                    <div className="sk sk-text-sm" style={{ width: '35%' }} />
+                  </div>
+                </div>
+              ))}
+            </>
           ) : sortedFavorites.length === 0 ? (
             <div className="empty-state">
               <Favorite className="empty-icon" />

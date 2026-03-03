@@ -8,6 +8,7 @@ import {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+import "./components/Skeleton.css";
 
 import Footer from "./components/Footer";
 
@@ -21,6 +22,7 @@ import Wishlist from "./screens/Wishlist/Wishlist";
 import Chat from "./screens/Chat/Chat";
 import Exchange from "./screens/Exchange/Exchange";
 import Profile from "./screens/Profile/Profile";
+import MyListings from "./screens/MyListings/MyListings";
 
 const App: React.FC = () => {
   return (
@@ -37,6 +39,7 @@ const App: React.FC = () => {
           <Route path="/chat" element={<Chat />} />
           <Route path="/exchange" element={<Exchange />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/my-listings" element={<MyListings />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Footer />

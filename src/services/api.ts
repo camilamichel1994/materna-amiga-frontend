@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3333';
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
 
 export const getAuthToken = (): string | null => {
   return localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -77,7 +77,7 @@ export const apiRequest = async <T>(
     // Garantir que sempre lançamos um Error válido
     if (error instanceof Error) {
       if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-        throw new Error('Erro de conexão. Verifique se o servidor está rodando em http://localhost:3333');
+        throw new Error('Erro de conexão. Verifique se o servidor backend está rodando.');
       }
       throw error;
     }

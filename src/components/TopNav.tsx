@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Settings from '@mui/icons-material/Settings';
 import Person from '@mui/icons-material/Person';
 import Favorite from '@mui/icons-material/Favorite';
 import Logout from '@mui/icons-material/Logout';
@@ -101,10 +100,6 @@ const TopNav: React.FC = () => {
                   </div>
                 </div>
                 <div className="user-menu-items">
-                  <Link to="/profile" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
-                    <Settings className="menu-icon-svg" fontSize="small" />
-                    <span>Configurações</span>
-                  </Link>
                   <Link to="/profile" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
                     <Person className="menu-icon-svg" fontSize="small" />
                     <span>Perfil</span>

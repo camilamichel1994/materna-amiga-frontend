@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import TopNav from '../../components/TopNav';
 import { getAvailableItemsService, createExchangeService, getMeService, ExchangeItem } from '../../services';
+import { getImageUrl } from '../../utils/format';
 import './Exchange.css';
 
 const Exchange: React.FC = () => {
@@ -49,10 +51,11 @@ const Exchange: React.FC = () => {
         message: `Gostaria de trocar ${selectedOffer.name} por ${selectedReceive.name}`
       });
 
-      alert(`Troca proposta: ${selectedOffer.name} por ${selectedReceive.name}`);
+      toast.success(`Troca proposta: ${selectedOffer.name} por ${selectedReceive.name}`);
       navigate('/chat');
     } catch (error: any) {
       console.error('Error proposing exchange:', error);
+      toast.error(error.message || 'Erro ao propor troca');
       setError(error.message || 'Erro ao propor troca');
     } finally {
       setIsLoading(false);
@@ -84,8 +87,8 @@ const Exchange: React.FC = () => {
                   className={`exchange-item-card ${selectedOffer?.id === item.id ? 'selected' : ''}`}
                   onClick={() => setSelectedOffer(item)}
                 >
-                  {item.photos && item.photos.length > 0 ? (
-                    <img src={item.photos[0]} alt={item.name} style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px' }} />
+                  {item.photos && item.photos.length > 0 && getImageUrl(item.photos[0]) ? (
+                    <img src={getImageUrl(item.photos[0])!} alt={item.name} style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px' }} />
                   ) : (
                     <div className="exchange-item-image">📦</div>
                   )}
@@ -101,7 +104,17 @@ const Exchange: React.FC = () => {
           <div className="exchange-section">
             <h2 className="section-title">Itens disponíveis para troca</h2>
             {isLoading ? (
-              <div style={{ textAlign: 'center', padding: '40px' }}>Carregando...</div>
+              <div className="sk-exchange-grid">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="sk-exchange-card">
+                    <div className="sk sk-exchange-card-img" />
+                    <div className="sk-exchange-card-body">
+                      <div className="sk sk-text" style={{ width: '80%' }} />
+                      <div className="sk sk-text-sm" style={{ width: '55%' }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : (
               <div className="items-grid">
                 {exchangeItems.map(item => (
@@ -110,8 +123,8 @@ const Exchange: React.FC = () => {
                     className={`exchange-item-card ${selectedReceive?.id === item.id ? 'selected' : ''}`}
                     onClick={() => setSelectedReceive(item)}
                   >
-                    {item.photos && item.photos.length > 0 ? (
-                      <img src={item.photos[0]} alt={item.name} style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px' }} />
+                    {item.photos && item.photos.length > 0 && getImageUrl(item.photos[0]) ? (
+                      <img src={getImageUrl(item.photos[0])!} alt={item.name} style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px' }} />
                     ) : (
                       <div className="exchange-item-image">📦</div>
                     )}

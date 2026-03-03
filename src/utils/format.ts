@@ -5,6 +5,8 @@ export const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3333';
+
 export const getImageUrl = (photo: string | null | undefined): string | null => {
   if (!photo) return null;
   
@@ -17,10 +19,10 @@ export const getImageUrl = (photo: string | null | undefined): string | null => 
   }
   
   if (photo.startsWith('/')) {
-    return `http://localhost:3333${photo}`;
+    return `${API_BASE}${photo}`;
   }
   
-  return `http://localhost:3333/${photo}`;
+  return `${API_BASE}/${photo}`;
 };
 
 const LISTING_TYPE_LABELS: Record<string, string> = {

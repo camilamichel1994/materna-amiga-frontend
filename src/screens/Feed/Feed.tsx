@@ -39,7 +39,7 @@ const Feed: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(() => window.innerWidth >= 768);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [items, setItems] = useState<Listing[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -127,11 +127,12 @@ const Feed: React.FC = () => {
     loadFavorites();
   }, []);
 
-  // Colapsar o filtro lateral quando a tela ficar menor que o breakpoint
-  const FILTER_COLLAPSE_BREAKPOINT = 950;
+  const MOBILE_BREAKPOINT = 768;
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < FILTER_COLLAPSE_BREAKPOINT) {
+      if (window.innerWidth >= MOBILE_BREAKPOINT) {
+        setShowFilters(true);
+      } else {
         setShowFilters(false);
       }
     };
@@ -327,22 +328,43 @@ const Feed: React.FC = () => {
 
               <div className="filter-section">
                 <h3>Faixa de preço</h3>
-                <div className="price-range">
-                  <div className="price-range-ends">
-                    <span>{formatCurrency(0)}</span>
-                    <span>{formatCurrency(priceBounds.max)}</span>
+                <div className="price-inputs-row">
+                  <div className="price-input-group">
+                    <label>Mínimo</label>
+                    <div className="price-input-wrapper">
+                      <span className="price-input-prefix">R$</span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={filters.priceRange[1]}
+                        value={filters.priceRange[0] || ''}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                          const val = Math.max(0, Number(e.target.value));
+                          setFilters((f) => ({ ...f, priceRange: [val, f.priceRange[1]] }));
+                        }}
+                        className="price-input"
+                        placeholder="0"
+                      />
+                    </div>
                   </div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={priceBounds.max}
-                    value={filters.priceRange[1]}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      const val = Number(e.target.value);
-                      setFilters((f) => ({ ...f, priceRange: [0, val] }));
-                    }}
-                    className="price-range-slider"
-                  />
+                  <span className="price-input-separator">—</span>
+                  <div className="price-input-group">
+                    <label>Máximo</label>
+                    <div className="price-input-wrapper">
+                      <span className="price-input-prefix">R$</span>
+                      <input
+                        type="number"
+                        min={filters.priceRange[0]}
+                        value={filters.priceRange[1] || ''}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                          const val = Math.max(0, Number(e.target.value));
+                          setFilters((f) => ({ ...f, priceRange: [f.priceRange[0], val] }));
+                        }}
+                        className="price-input"
+                        placeholder={String(priceBounds.max)}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -455,7 +477,18 @@ const Feed: React.FC = () => {
 
             <div className="items-list">
               {isLoading ? (
-                <div className="feed-loading">Carregando...</div>
+                <div className="sk-feed-grid">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="sk-feed-card">
+                      <div className="sk sk-feed-card-img" />
+                      <div className="sk-feed-card-body">
+                        <div className="sk sk-text" style={{ width: '75%' }} />
+                        <div className="sk sk-text-sm" style={{ width: '50%' }} />
+                        <div className="sk sk-text-sm" style={{ width: '35%' }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : items.length === 0 ? (
                 <div className="feed-empty-state">
                   <img
