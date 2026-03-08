@@ -6,6 +6,7 @@ import { Favorite, FavoriteBorder, ExpandMore, ExpandLess, LocationOn, Person, S
 import { getListingByIdService, getSimilarListingsService, addFavoriteService, removeFavoriteService, getFavoritesService, createChatService, getMeService, Listing } from '../../services';
 import { formatCurrency, getImageUrl, getListingTypeLabel } from '../../utils/format';
 import './ItemDetail.css';
+import { useAccount } from '../../contexts/AccountContext';
 
 const ItemDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -16,14 +17,10 @@ const ItemDetail: React.FC = () => {
   const [item, setItem] = useState<Listing | null>(null);
   const [similarItems, setSimilarItems] = useState<Listing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [messageModalOpen, setMessageModalOpen] = useState(false);
   const [messageText, setMessageText] = useState('');
   const [isSending, setIsSending] = useState(false);
-
-  useEffect(() => {
-    getMeService().then((user) => setCurrentUserId(user.id)).catch(() => setCurrentUserId(null));
-  }, []);
+  const { user: currentUser } = useAccount();
 
   useEffect(() => {
     if (id) {
@@ -91,7 +88,7 @@ const ItemDetail: React.FC = () => {
     return state;
   };
 
-  const isOwnListing = Boolean(item && currentUserId && item.seller?.id === currentUserId);
+  const isOwnListing = Boolean(item && currentUser?.id && item.seller?.id === currentUser?.id);
 
   const openMessageModal = () => setMessageModalOpen(true);
 
@@ -176,12 +173,14 @@ const ItemDetail: React.FC = () => {
         <div className="item-detail-layout">
           <div className="item-image-section">
             <div className="item-image-main">
+              {currentUser?.id !== item.seller?.id && (
               <button 
                 className="favorite-btn-large"
                 onClick={toggleFavorite}
               >
-                {isFavorite ? <Favorite /> : <FavoriteBorder />}
-              </button>
+                  {isFavorite ? <Favorite /> : <FavoriteBorder />}
+                </button>
+              )}
               <div className="item-image-container">
                 {(() => {
                   const imageUrl = getImageUrl(images[currentImageIndex]);

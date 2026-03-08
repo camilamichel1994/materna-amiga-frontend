@@ -21,6 +21,7 @@ import {
   getListingTypeLabel,
 } from "../../utils/format";
 import "./Feed.css";
+import { useAccount } from "../../contexts/AccountContext";
 
 const LISTING_TYPE_OPTIONS: { value: string; label: string }[] = [
   { value: "venda", label: "Venda" },
@@ -44,6 +45,7 @@ const Feed: React.FC = () => {
   const [items, setItems] = useState<Listing[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const { user: currentUser } = useAccount();
   const [paginationMeta, setPaginationMeta] = useState({
     total: 0,
     page: 1,
@@ -511,12 +513,14 @@ const Feed: React.FC = () => {
                       onClick={() => navigate(`/item/${item.id}`)}
                     >
                       <div className="item-image-placeholder">
+                        {currentUser?.id !== item.ownerId && (
                         <button
                           className={`favorite-btn ${isFavorite ? "is-favorite" : ""}`}
                           onClick={(e) => toggleFavorite(item.id, e)}
                         >
                           {isFavorite ? <Favorite /> : <FavoriteBorder />}
                         </button>
+                        )}
                         {(() => {
                           const imageUrl = getImageUrl(item.photos?.[0]);
                           return imageUrl ? (

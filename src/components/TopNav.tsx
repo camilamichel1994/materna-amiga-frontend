@@ -1,36 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Person from '@mui/icons-material/Person';
 import Favorite from '@mui/icons-material/Favorite';
 import Logout from '@mui/icons-material/Logout';
-import { getMeService, logoutService } from '../services';
+import { useAccount } from '../contexts/AccountContext';
 import './TopNav.css';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar_url?: string;
-  location?: string;
-}
 
 const TopNav: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    getMeService()
-      .then((data) => {
-        if (!cancelled) setUser(data as User);
-      })
-      .catch(() => {
-        if (!cancelled) setUser(null);
-      });
-    return () => { cancelled = true; };
-  }, []);
+  const { user, logout } = useAccount();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -39,9 +19,9 @@ const TopNav: React.FC = () => {
   const avatarUrl = user?.avatar_url;
   const initial = displayName.charAt(0).toUpperCase();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setShowUserMenu(false);
-    logoutService();
+    await logout();
     navigate('/login');
   };
 

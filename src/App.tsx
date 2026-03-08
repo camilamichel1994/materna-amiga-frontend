@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import "./components/Skeleton.css";
 
+import { AccountProvider } from "./contexts/AccountContext";
 import Footer from "./components/Footer";
 
 import Welcome from "./screens/Welcome/Welcome";
@@ -27,6 +28,7 @@ import MyListings from "./screens/MyListings/MyListings";
 const App: React.FC = () => {
   return (
     <Router>
+      <AccountProvider>
       <div className="App">
         <Routes>
           <Route path="/" element={<Welcome />} />
@@ -45,6 +47,7 @@ const App: React.FC = () => {
         <Footer />
         <ToastContainer position="top-right" autoClose={4000} theme="light" />
       </div>
+      </AccountProvider>
     </Router>
   );
 };

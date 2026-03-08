@@ -7,6 +7,7 @@ export interface Listing {
   name: string;
   description: string;
   price: number | null;
+  ownerId: string;
   listingType?: ListingTypeApi;
   condition?: string;
   photos?: string[];

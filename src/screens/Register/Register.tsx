@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../../config/firebase';
 import { registerService, googleAuthService } from '../../services/auth/authService';
+import { useAccount } from '../../contexts/AccountContext';
 import './Register.css';
 
 interface FormData {
@@ -15,6 +16,7 @@ interface FormData {
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
+  const { setUser } = useAccount();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -36,12 +38,13 @@ const Register: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await registerService({
+      const response = await registerService({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         acceptTerms: formData.agreeToTerms
       });
+      setUser(response.user);
       toast.success('Conta criada com sucesso!');
       navigate('/feed');
     } catch (error: any) {
@@ -68,7 +71,8 @@ const Register: React.FC = () => {
       const idToken = await user.getIdToken();
       console.log('Firebase ID token obtained');
 
-      await googleAuthService({ idToken });
+      const response = await googleAuthService({ idToken });
+      setUser(response.user);
       console.log('Backend authentication successful');
 
       navigate('/feed');
