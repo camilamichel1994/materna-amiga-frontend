@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import TopNav from '../../components/TopNav';
 import { LocationOn, Star, Edit, Inventory, Favorite } from '@mui/icons-material';
-import { getProfileService, getUserItemsService, getMeService, ProfileResponse, Review } from '../../services';
+import { getProfileService, getMeService, ProfileResponse, Review } from '../../services';
 import './Profile.css';
 
 const Profile: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
-  const [userItems, setUserItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [reviews, setReviews] = useState<Review[]>([]);
 
@@ -28,12 +27,8 @@ const Profile: React.FC = () => {
         const me = await getMeService();
         profileData = await getProfileService(me.id);
       }
-
       setProfile(profileData);
       setReviews(profileData.reviews || []);
-
-      const items = await getUserItemsService(profileData.id);
-      setUserItems(items);
     } catch (error: any) {
       console.error('Error loading profile:', error);
     } finally {
@@ -138,13 +133,6 @@ const Profile: React.FC = () => {
                 {renderStars(profile.rating)}
               </div>
             )}
-          </div>
-          <div className="stat-card stat-card-clickable" onClick={() => navigate('/my-listings')}>
-            <div className="stat-icon">
-              <Inventory />
-            </div>
-            <div className="stat-value">{userItems.length}</div>
-            <div className="stat-label">Meus anúncios</div>
           </div>
           <div className="stat-card">
             <div className="stat-icon">
