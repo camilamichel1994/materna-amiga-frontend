@@ -51,6 +51,7 @@ export interface UpdateListingInput {
 
 export interface ListingsQueryParams {
   q?: string;
+  ownerId?: string;
   condition?: string;
   listingType?: string;
   priceMin?: number;
@@ -116,31 +117,6 @@ export const updateListingService = async (id: string, data: UpdateListingInput)
 export const deleteListingService = async (id: string): Promise<void> => {
   return apiRequest<void>(`/listings/${id}`, {
     method: 'DELETE',
-    requireAuth: true,
-  });
-};
-
-export interface MyListingsQueryParams {
-  page?: number;
-  limit?: number;
-  sortBy?: 'createdAt' | 'price' | 'rating';
-  sortOrder?: 'asc' | 'desc';
-}
-
-export const getMyListingsService = async (params?: MyListingsQueryParams): Promise<ListingsResponse> => {
-  const queryString = new URLSearchParams();
-
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        queryString.append(key, String(value));
-      }
-    });
-  }
-
-  const endpoint = `/listings/me${queryString.toString() ? `?${queryString.toString()}` : ''}`;
-  return apiRequest<ListingsResponse>(endpoint, {
-    method: 'GET',
     requireAuth: true,
   });
 };

@@ -1,17 +1,18 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TopNav from '../../components/TopNav';
 import { Add, Edit, Delete, Inventory, Close, Warning } from '@mui/icons-material';
 import {
-  getMyListingsService,
   deleteListingService,
   updateListingService,
   Listing,
   UpdateListingInput,
+  getListingsService,
 } from '../../services';
 import { formatCurrency, getImageUrl, getListingTypeLabel } from '../../utils/format';
 import './MyListings.css';
+import { useAccount } from '../../contexts/AccountContext';
 
 const MyListings: React.FC = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const MyListings: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const { user } = useAccount();
 
   // Delete modal
   const [deleteTarget, setDeleteTarget] = useState<Listing | null>(null);
@@ -36,10 +38,11 @@ const MyListings: React.FC = () => {
   });
   const [isSaving, setIsSaving] = useState(false);
 
-  const loadListings = async (page: number = 1) => {
+  const loadListings = useCallback(async (page: number = 1) => {
     setIsLoading(true);
     try {
-      const response = await getMyListingsService({
+      const response = await getListingsService({
+        ownerId: user?.id,
         page,
         limit: 10,
         sortBy: 'createdAt',
@@ -56,11 +59,12 @@ const MyListings: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
+    if (!user) return;
     loadListings(currentPage);
-  }, [currentPage]);
+  }, [currentPage, user, loadListings]);
 
   // Delete
   const handleDeleteClick = (item: Listing, e: React.MouseEvent) => {
