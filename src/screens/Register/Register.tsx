@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { signInWithPopup } from 'firebase/auth';
@@ -16,7 +16,7 @@ interface FormData {
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const { setUser } = useAccount();
+  const { setUser, user } = useAccount();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -24,6 +24,10 @@ const Register: React.FC = () => {
     agreeToTerms: false
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) navigate('/feed');
+  }, [user, navigate]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;

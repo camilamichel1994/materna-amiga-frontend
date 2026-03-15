@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Welcome.css';
+import { useAccount } from '../../contexts/AccountContext';
 
 const Welcome: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAccount();
+
+  useEffect(() => {
+    if (user) navigate('/feed');
+  }, [user, navigate]);
 
   return (
     <div className="welcome-screen">
