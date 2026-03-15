@@ -163,6 +163,13 @@ const Login: React.FC = () => {
             </svg>
           </button>
           <div className="login-content">
+            <div className="login-logo-container">
+              <img 
+                src={require('../../Images/materna_amiga_logo_2-removebg-preview-Photoroom.png')} 
+                alt="Materna Amiga Logo" 
+                className="login-logo"
+              />
+            </div>
             <h1 className="login-title">Bem-vinda de volta!</h1>
             <p className="login-subtitle">Digite suas credenciais para acessar sua conta</p>
             

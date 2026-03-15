@@ -164,6 +164,13 @@ const Register: React.FC = () => {
             </svg>
           </button>
           <div className="register-content">
+            <div className="register-logo-container">
+              <img 
+                src={require('../../Images/materna_amiga_logo_2-removebg-preview-Photoroom.png')} 
+                alt="Materna Amiga Logo" 
+                className="register-logo"
+              />
+            </div>
             <h1 className="register-title">Comece Agora</h1>
             
             <form onSubmit={handleSubmit} className="register-form">

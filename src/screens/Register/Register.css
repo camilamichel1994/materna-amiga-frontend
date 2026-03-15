@@ -66,6 +66,17 @@
   width: 100%;
 }
 
+.register-logo-container {
+  text-align: center;
+  margin-bottom: 1.5vh;
+}
+
+.register-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
 .register-title {
   font-size: clamp(20px, 2.5vw, 28px);
   font-weight: 600;
