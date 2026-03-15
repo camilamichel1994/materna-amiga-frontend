@@ -5,7 +5,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  avatar_url?: string;
+  avatarUrl?: string;
   location?: string;
   baby_age_range?: string;
   rating?: number;
@@ -17,7 +17,7 @@ export interface Review {
   id: string;
   user: {
     name: string;
-    avatar_url?: string;
+    avatarUrl?: string;
   };
   rating: number;
   comment?: string;
@@ -32,7 +32,7 @@ export interface UpdateProfileInput {
   name?: string;
   location?: string;
   baby_age_range?: string;
-  avatar_url?: string;
+  avatarUrl?: string;
 }
 
 export interface CreateRatingInput {

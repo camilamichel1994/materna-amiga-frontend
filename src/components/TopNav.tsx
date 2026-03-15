@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Person from '@mui/icons-material/Person';
-import Favorite from '@mui/icons-material/Favorite';
 import Logout from '@mui/icons-material/Logout';
 import { useAccount } from '../contexts/AccountContext';
 import './TopNav.css';
@@ -16,7 +15,8 @@ const TopNav: React.FC = () => {
 
   const displayName = user?.name || 'Usuária';
   const displayEmail = user?.email || '';
-  const avatarUrl = user?.avatar_url;
+  const avatarUrl = user?.avatarUrl;
+
   const initial = displayName.charAt(0).toUpperCase();
 
   const handleLogout = async () => {
@@ -83,10 +83,6 @@ const TopNav: React.FC = () => {
                   <Link to="/profile" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
                     <Person className="menu-icon-svg" fontSize="small" />
                     <span>Perfil</span>
-                  </Link>
-                  <Link to="/favorites" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
-                    <Favorite className="menu-icon-svg" fontSize="small" />
-                    <span>Favoritos</span>
                   </Link>
                   <button type="button" className="user-menu-item" onClick={handleLogout}>
                     <Logout className="menu-icon-svg" fontSize="small" />

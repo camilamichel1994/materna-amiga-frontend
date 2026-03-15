@@ -100,8 +100,8 @@ const Profile: React.FC = () => {
         <div className="profile-header-card">
           <div className="profile-header">
             <div className="profile-avatar">
-              {profile.avatar_url ? (
-                <img src={profile.avatar_url} alt={profile.name || ''} />
+              {profile.avatarUrl ? (
+                <img src={profile.avatarUrl} alt={profile.name || ''} />
               ) : (
                 (profile.name || '?').charAt(0)
               )}
@@ -144,7 +144,7 @@ const Profile: React.FC = () => {
         </div>
 
         <div className="profile-actions">
-          <button className="btn btn-action">
+          <button className="btn btn-action" onClick={() => navigate('/edit-profile')}>
             <Edit />
             <span>Editar perfil</span>
           </button>

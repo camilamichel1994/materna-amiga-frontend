@@ -24,6 +24,7 @@ import Chat from "./screens/Chat/Chat";
 import Exchange from "./screens/Exchange/Exchange";
 import Profile from "./screens/Profile/Profile";
 import MyListings from "./screens/MyListings/MyListings";
+import EditProfile from "./screens/EditProfile/EditProfile";
 
 const App: React.FC = () => {
   return (
@@ -41,6 +42,7 @@ const App: React.FC = () => {
           <Route path="/chat" element={<Chat />} />
           <Route path="/exchange" element={<Exchange />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/my-listings" element={<MyListings />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
