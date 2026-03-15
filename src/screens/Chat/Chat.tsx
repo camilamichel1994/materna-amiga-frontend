@@ -1,8 +1,9 @@
-import React, { useState, FormEvent, ChangeEvent, useEffect } from 'react';
+import React, { useState, FormEvent, ChangeEvent, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TopNav from '../../components/TopNav';
-import { getChatsService, getChatMessagesService, sendMessageService, markChatAsReadService, getMeService, Chat as ChatType, Message } from '../../services';
+import { getChatsService, getChatMessagesService, sendMessageService, markChatAsReadService, Chat as ChatType, Message } from '../../services';
 import './Chat.css';
+import { useAccount } from '../../contexts/AccountContext';
 
 const Chat: React.FC = () => {
   const location = useLocation();
@@ -12,24 +13,24 @@ const Chat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const { user } = useAccount();
 
-  useEffect(() => {
-    loadCurrentUser();
-  }, []);
-
-  const loadCurrentUser = async () => {
+  const loadChats = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const user = await getMeService();
-      setCurrentUserId(user.id);
+      const chatsList = await getChatsService();
+      setChats(chatsList);
     } catch (error: any) {
-      console.error('Error loading current user:', error);
+      console.error('Error loading chats:', error);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
+    if (!user) return;
     loadChats();
-  }, []);
+  }, [user, loadChats]);
 
   useEffect(() => {
     const openChatId = (location.state as { openChatId?: string } | null)?.openChatId;
@@ -55,18 +56,6 @@ const Chat: React.FC = () => {
       markChatAsRead(selectedChat);
     }
   }, [selectedChat]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const loadChats = async () => {
-    setIsLoading(true);
-    try {
-      const chatsList = await getChatsService();
-      setChats(chatsList);
-    } catch (error: any) {
-      console.error('Error loading chats:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const loadMessages = async (chatId: string) => {
     try {
@@ -134,7 +123,7 @@ const Chat: React.FC = () => {
         </div>
         <div className="messages-container">
           {[...messages].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map(msg => {
-            const isMe = msg.sender_id === currentUserId;
+            const isMe = msg.sender_id === user?.id;
             return (
               <div key={msg.id} className={`message ${isMe ? 'me' : 'other'}`}>
                 <div className="message-bubble">
