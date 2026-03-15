@@ -1,8 +1,13 @@
 .chat-screen {
   background-color: var(--white);
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-screen ~ .footer {
+  display: none;
 }
 
 .page-container {
@@ -14,6 +19,7 @@
   margin: 0 auto;
   width: 100%;
   background-color: var(--white);
+  min-height: 0;
 }
 
 .chat-list-header {
@@ -213,8 +219,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding-bottom: 80px;
   background-color: var(--light-gray);
+  min-height: 0;
 }
 
 .message {
