@@ -1,47 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Person from '@mui/icons-material/Person';
-import Favorite from '@mui/icons-material/Favorite';
 import Logout from '@mui/icons-material/Logout';
-import { getMeService, logoutService } from '../services';
+import { useAccount } from '../contexts/AccountContext';
 import './TopNav.css';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar_url?: string;
-  location?: string;
-}
 
 const TopNav: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    getMeService()
-      .then((data) => {
-        if (!cancelled) setUser(data as User);
-      })
-      .catch(() => {
-        if (!cancelled) setUser(null);
-      });
-    return () => { cancelled = true; };
-  }, []);
+  const { user, logout } = useAccount();
 
   const isActive = (path: string) => location.pathname === path;
 
   const displayName = user?.name || 'Usuária';
   const displayEmail = user?.email || '';
-  const avatarUrl = user?.avatar_url;
+  const avatarUrl = user?.avatarUrl;
+
   const initial = displayName.charAt(0).toUpperCase();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setShowUserMenu(false);
-    logoutService();
+    await logout();
     navigate('/login');
   };
 
@@ -58,7 +38,7 @@ const TopNav: React.FC = () => {
           <Link to="/feed" className={`nav-link ${isActive('/feed') ? 'active' : ''}`}>
             Anúncios
           </Link>
-          <Link to="/wishlist" className={`nav-link ${isActive('/wishlist') ? 'active' : ''}`}>
+          <Link to="/favorites" className={`nav-link ${isActive('/favorites') ? 'active' : ''}`}>
             Favoritos
           </Link>
           <Link to="/add-item" className={`nav-link ${isActive('/add-item') ? 'active' : ''}`}>
@@ -103,10 +83,6 @@ const TopNav: React.FC = () => {
                   <Link to="/profile" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
                     <Person className="menu-icon-svg" fontSize="small" />
                     <span>Perfil</span>
-                  </Link>
-                  <Link to="/wishlist" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
-                    <Favorite className="menu-icon-svg" fontSize="small" />
-                    <span>Favoritos</span>
                   </Link>
                   <button type="button" className="user-menu-item" onClick={handleLogout}>
                     <Logout className="menu-icon-svg" fontSize="small" />

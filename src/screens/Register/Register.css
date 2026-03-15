@@ -24,7 +24,7 @@
   position: relative;
 }
 
-.back-button {
+.register-screen .back-button {
   position: absolute;
   top: 24px;
   left: 24px;
@@ -41,13 +41,13 @@
   transition: all 0.2s ease;
 }
 
-.back-button:hover {
+.register-screen .back-button:hover {
   background-color: #f5f5f5;
   border-color: #B8A8DC;
   color: #9B8AC4;
 }
 
-.back-button svg {
+.register-screen .back-button svg {
   width: 20px;
   height: 20px;
 }

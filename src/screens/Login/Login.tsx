@@ -1,10 +1,11 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../../config/firebase';
 
 import { loginService, googleAuthService, LoginInput } from '../../services/auth/authService';
+import { useAccount } from '../../contexts/AccountContext';
 import './Login.css';
 
 interface FormData {
@@ -15,12 +16,17 @@ interface FormData {
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { setUser, user } = useAccount();
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
     remember: false
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) navigate('/feed');
+  }, [user, navigate]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -41,8 +47,8 @@ const Login: React.FC = () => {
         remember: formData.remember
       };
 
-      await loginService(loginData);
-      toast.success('Login realizado com sucesso!');
+      const response = await loginService(loginData);
+      setUser(response.user);
       navigate('/feed');
     } catch (error: any) {
       console.error('Login error:', error);
@@ -68,7 +74,8 @@ const Login: React.FC = () => {
       const idToken = await user.getIdToken();
       console.log('Firebase ID token obtained');
 
-      await googleAuthService({ idToken });
+      const response = await googleAuthService({ idToken });
+      setUser(response.user);
       console.log('Backend authentication successful');
 
       navigate('/feed');

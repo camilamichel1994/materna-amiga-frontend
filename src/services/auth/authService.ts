@@ -30,7 +30,7 @@ export interface AuthResponse {
     id: string;
     name: string;
     email: string;
-    avatar_url?: string;
+    avatarUrl?: string;
     location?: string;
   };
 }

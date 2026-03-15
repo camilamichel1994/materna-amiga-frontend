@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TopNav from '../../components/TopNav';
-import { Search, Favorite, FavoriteBorder } from '@mui/icons-material';
+import { Search, Favorite } from '@mui/icons-material';
 import { getFavoritesService, removeFavoriteService, Favorite as FavoriteItem } from '../../services';
 import { formatCurrency, getImageUrl, getListingTypeLabel } from '../../utils/format';
 import './Wishlist.css';
@@ -18,10 +18,7 @@ const Wishlist: React.FC = () => {
 
   useEffect(() => {
     // Se já está executando, ignora a segunda chamada do StrictMode
-    if (isExecutingRef.current) {
-      return;
-    }
-
+    if (isExecutingRef.current) return;
     isExecutingRef.current = true;
 
     const loadFavorites = async () => {
