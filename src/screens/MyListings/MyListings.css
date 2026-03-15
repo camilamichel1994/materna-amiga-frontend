@@ -153,9 +153,15 @@
   cursor: pointer;
 }
 
+.my-listing-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
 .my-listing-type-badge {
   display: inline-flex;
-  align-self: flex-start;
   padding: 3px 10px;
   border-radius: 20px;
   font-size: 11px;
@@ -165,7 +171,6 @@
   white-space: nowrap;
   background: rgba(186, 177, 234, 0.15);
   color: #9d92d8;
-  margin-bottom: 4px;
 }
 
 .my-listing-name {
@@ -231,6 +236,24 @@
 
 .my-listing-actions button svg {
   font-size: 24px !important;
+}
+
+/* Card de item vendido */
+.my-listing-card.my-listing-sold {
+  opacity: 0.7;
+}
+
+.my-listing-sold-badge {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  background: rgba(107, 154, 107, 0.15);
+  color: #6b9a6b;
 }
 
 /* Modal de confirmação de exclusão */

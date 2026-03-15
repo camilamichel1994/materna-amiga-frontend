@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TopNav from '../../components/TopNav';
 import { Favorite, FavoriteBorder, ExpandMore, ExpandLess, LocationOn, Person, Star, Chat } from '@mui/icons-material';
-import { getListingByIdService, getSimilarListingsService, addFavoriteService, removeFavoriteService, getFavoritesService, createChatService, getChatsService, getMeService, Listing, getTransactionsService } from '../../services';
+import { getListingByIdService, getSimilarListingsService, addFavoriteService, removeFavoriteService, getFavoritesService, createChatService, getChatsService, getMeService, Listing } from '../../services';
 import { formatCurrency, getImageUrl, getListingTypeLabel } from '../../utils/format';
 import './ItemDetail.css';
 import { useAccount } from '../../contexts/AccountContext';
@@ -20,7 +20,6 @@ const ItemDetail: React.FC = () => {
   const [messageModalOpen, setMessageModalOpen] = useState(false);
   const [messageText, setMessageText] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [isSold, setIsSold] = useState(false);
   const [existingChatId, setExistingChatId] = useState<string | null>(null);
   const { user: currentUser } = useAccount();
 
@@ -29,7 +28,6 @@ const ItemDetail: React.FC = () => {
       loadItem();
       loadSimilarItems();
       checkIfFavorite(id);
-      checkIfSold(id);
       checkExistingChat(id);
     }
   }, [id]);
@@ -39,16 +37,6 @@ const ItemDetail: React.FC = () => {
       const chats = await getChatsService();
       const existing = chats.find(c => c.item.id === listingId);
       setExistingChatId(existing?.id ?? null);
-    } catch {
-      // ignore - user may not be logged in
-    }
-  };
-
-  const checkIfSold = async (listingId: string) => {
-    try {
-      const txResponse = await getTransactionsService(1, 100);
-      const existing = txResponse.items.find(t => t.listing.id === listingId);
-      setIsSold(!!existing);
     } catch {
       // ignore - user may not be logged in
     }
@@ -252,6 +240,11 @@ const ItemDetail: React.FC = () => {
           <div className="item-info-section">
             <div className="item-header-info">
               <h1 className="item-detail-name">{item.name}</h1>
+              {item.sold && (
+                <span className="item-sold-badge">
+                  {item.listingType === 'doacao' ? 'Doado' : item.listingType === 'troca' ? 'Trocado' : 'Vendido'}
+                </span>
+              )}
             </div>
             
             {item.price !== null ? (
@@ -315,12 +308,8 @@ const ItemDetail: React.FC = () => {
               </div>
             )}
 
-            {!isOwnListing && (
-              isSold ? (
-                <div className="item-unavailable-notice">
-                  Este item não está mais disponível
-                </div>
-              ) : existingChatId ? (
+            {!isOwnListing && !item.sold && (
+              existingChatId ? (
                 <button type="button" className="btn btn-buy" onClick={() => navigate('/chat', { state: { openChatId: existingChatId } })}>
                   Ir para conversa
                 </button>

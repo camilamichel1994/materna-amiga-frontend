@@ -24,6 +24,7 @@ export interface Listing {
     state?: string;
   };
   rating?: number;
+  sold?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -61,6 +62,7 @@ export interface ListingsQueryParams {
   sortOrder?: 'asc' | 'desc';
   page?: number;
   limit?: number;
+  includeSold?: boolean;
 }
 
 export interface ListingsResponse {

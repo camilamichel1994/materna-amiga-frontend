@@ -47,6 +47,7 @@ const MyListings: React.FC = () => {
         limit: 10,
         sortBy: 'createdAt',
         sortOrder: 'desc',
+        includeSold: true,
       });
       setItems(response.data || []);
       if (response.meta) {
@@ -147,6 +148,14 @@ const MyListings: React.FC = () => {
     }
   };
 
+  const getSoldLabel = (listingType?: string): string => {
+    switch (listingType) {
+      case 'doacao': return 'Doado';
+      case 'troca': return 'Trocado';
+      default: return 'Vendido';
+    }
+  };
+
   const formatDate = (dateString?: string): string => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -203,7 +212,7 @@ const MyListings: React.FC = () => {
               {items.map((item) => {
                 const imageUrl = getImageUrl(item.photos?.[0]);
                 return (
-                  <div key={item.id} className="my-listing-card">
+                  <div key={item.id} className={`my-listing-card${item.sold ? ' my-listing-sold' : ''}`}>
                     <div
                       className="my-listing-image"
                       onClick={() => navigate(`/item/${item.id}`)}
@@ -219,9 +228,16 @@ const MyListings: React.FC = () => {
                       className="my-listing-content"
                       onClick={() => navigate(`/item/${item.id}`)}
                     >
-                      <span className="my-listing-type-badge">
-                        {getListingTypeLabel(item.listingType)}
-                      </span>
+                      <div className="my-listing-badges">
+                        <span className="my-listing-type-badge">
+                          {getListingTypeLabel(item.listingType)}
+                        </span>
+                        {item.sold && (
+                          <span className="my-listing-sold-badge">
+                            {getSoldLabel(item.listingType)}
+                          </span>
+                        )}
+                      </div>
                       <h3 className="my-listing-name">{item.name}</h3>
                       <div className="my-listing-details">
                         {item.price !== null && item.price !== undefined ? (
@@ -234,22 +250,24 @@ const MyListings: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="my-listing-actions">
-                      <button
-                        className="btn-edit"
-                        title="Editar"
-                        onClick={(e) => handleEditClick(item, e)}
-                      >
-                        <Edit />
-                      </button>
-                      <button
-                        className="btn-delete"
-                        title="Excluir"
-                        onClick={(e) => handleDeleteClick(item, e)}
-                      >
-                        <Delete />
-                      </button>
-                    </div>
+                    {!item.sold && (
+                      <div className="my-listing-actions">
+                        <button
+                          className="btn-edit"
+                          title="Editar"
+                          onClick={(e) => handleEditClick(item, e)}
+                        >
+                          <Edit />
+                        </button>
+                        <button
+                          className="btn-delete"
+                          title="Excluir"
+                          onClick={(e) => handleDeleteClick(item, e)}
+                        >
+                          <Delete />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 );
               })}
