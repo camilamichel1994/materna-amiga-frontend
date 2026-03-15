@@ -1,10 +1,51 @@
 import React, { useState, FormEvent, ChangeEvent, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import TopNav from '../../components/TopNav';
-import { getChatsService, getChatMessagesService, sendMessageService, markChatAsReadService, Chat as ChatType, Message } from '../../services';
+import {
+  getChatsService, getChatMessagesService, sendMessageService, markChatAsReadService,
+  Chat as ChatType, Message,
+  getListingByIdService, Listing, ListingTypeApi,
+  createTransactionService, getTransactionsService, TransactionItem,
+  createReviewService, getReviewsByUserService,
+} from '../../services';
 import './Chat.css';
 import { useAccount } from '../../contexts/AccountContext';
 import Avatar from '../../components/Avatar';
+
+const SELLER_CONFIRM_PREFIX = '✅ Transação finalizada:';
+
+const getSellerActionLabel = (type?: ListingTypeApi) => {
+  switch (type) {
+    case 'doacao': return 'Doei para essa pessoa';
+    case 'troca': return 'Troquei com essa pessoa';
+    default: return 'Vendi para essa pessoa';
+  }
+};
+
+const getSellerConfirmQuestion = (type?: ListingTypeApi) => {
+  switch (type) {
+    case 'doacao': return 'Confirmar que doou este item?';
+    case 'troca': return 'Confirmar que trocou este item?';
+    default: return 'Confirmar que vendeu este item?';
+  }
+};
+
+const getSellerMessage = (type?: ListingTypeApi, itemName?: string) => {
+  switch (type) {
+    case 'doacao': return `${SELLER_CONFIRM_PREFIX} Doei "${itemName}" para você! Por favor, confirme o recebimento.`;
+    case 'troca': return `${SELLER_CONFIRM_PREFIX} Troquei "${itemName}" com você! Por favor, confirme o recebimento.`;
+    default: return `${SELLER_CONFIRM_PREFIX} Vendi "${itemName}" para você! Por favor, confirme o recebimento.`;
+  }
+};
+
+const getCompletedLabel = (type?: ListingTypeApi) => {
+  switch (type) {
+    case 'doacao': return 'Doação concluída';
+    case 'troca': return 'Troca concluída';
+    default: return 'Venda concluída';
+  }
+};
 
 const Chat: React.FC = () => {
   const location = useLocation();
@@ -15,6 +56,14 @@ const Chat: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAccount();
+
+  const [listingDetails, setListingDetails] = useState<Listing | null>(null);
+  const [chatTransaction, setChatTransaction] = useState<TransactionItem | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   const loadChats = useCallback(async () => {
     setIsLoading(true);
@@ -55,6 +104,13 @@ const Chat: React.FC = () => {
     if (selectedChat) {
       loadMessages(selectedChat);
       markChatAsRead(selectedChat);
+      const chat = chats.find(c => c.id === selectedChat);
+      if (chat) loadListingAndTransaction(chat.item.id);
+    } else {
+      setListingDetails(null);
+      setChatTransaction(null);
+      setReviewSubmitted(false);
+      setSelectedRating(0);
     }
   }, [selectedChat]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -90,6 +146,85 @@ const Chat: React.FC = () => {
     }
   };
 
+  const loadListingAndTransaction = async (listingId: string) => {
+    try {
+      const [listing, txResponse] = await Promise.all([
+        getListingByIdService(listingId),
+        getTransactionsService(1, 100),
+      ]);
+      setListingDetails(listing);
+      const existing = txResponse.items.find(t => t.listing.id === listingId);
+      setChatTransaction(existing || null);
+
+      const sId = listing.seller?.id || listing.ownerId;
+      if (sId && user?.id !== sId) {
+        try {
+          const reviewsResponse = await getReviewsByUserService(sId, 1, 100);
+          const alreadyReviewed = reviewsResponse.items.some(r => r.reviewer.id === user?.id);
+          setReviewSubmitted(alreadyReviewed);
+        } catch {
+          setReviewSubmitted(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading listing/transaction:', error);
+    }
+  };
+
+  const handleSellerConfirm = async () => {
+    const chat = chats.find(c => c.id === selectedChat);
+    if (!selectedChat || !listingDetails || !chat) return;
+    setIsSubmitting(true);
+    try {
+      const text = getSellerMessage(listingDetails.listingType, chat.item.name);
+      const newMsg = await sendMessageService(selectedChat, { text });
+      setMessages(prev => [...prev, newMsg]);
+      setShowConfirmDialog(false);
+      loadChats();
+      toast.success('Solicitação enviada! Aguarde a confirmação.');
+    } catch (error) {
+      console.error('Error sending confirmation message:', error);
+      toast.error('Erro ao enviar solicitação');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleBuyerConfirmReceipt = async () => {
+    if (!selectedChat || !listingDetails) return;
+    setIsSubmitting(true);
+    try {
+      await createTransactionService({ listing_id: listingDetails.id });
+      await loadListingAndTransaction(listingDetails.id);
+      toast.success('Recebimento confirmado!');
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+      toast.error('Erro ao confirmar recebimento');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmitReview = async (rating: number) => {
+    const reviewedUserId = listingDetails?.seller?.id || listingDetails?.ownerId;
+    if (!listingDetails || !reviewedUserId) return;
+    setIsSubmitting(true);
+    try {
+      await createReviewService({
+        reviewed_user_id: reviewedUserId,
+        rating,
+        comment: '',
+      });
+      setReviewSubmitted(true);
+      toast.success('Avaliação enviada!');
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      toast.error('Erro ao enviar avaliação');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const formatTime = (dateString: string): string => {
     const date = new Date(dateString);
     const now = new Date();
@@ -109,6 +244,11 @@ const Chat: React.FC = () => {
 
   if (selectedChat) {
     const chat = chats.find(c => c.id === selectedChat);
+    const sellerId = listingDetails?.seller?.id || listingDetails?.ownerId;
+    const isSeller = !!listingDetails && !!sellerId && user?.id === sellerId;
+    const isBuyer = !!listingDetails && !!sellerId && user?.id !== sellerId;
+    const hasTransaction = !!chatTransaction;
+    const sellerHasSignaled = messages.some(m => m.text.startsWith(SELLER_CONFIRM_PREFIX));
 
     return (
       <div className="chat-screen">
@@ -121,7 +261,94 @@ const Chat: React.FC = () => {
             <div className="chat-name">{chat?.other_user.name}</div>
             <div className="chat-item">{chat?.item.name}</div>
           </div>
+
+          {isSeller && !hasTransaction && !sellerHasSignaled && (
+            <button
+              className="transaction-action-btn"
+              onClick={() => setShowConfirmDialog(true)}
+            >
+              {getSellerActionLabel(listingDetails?.listingType)}
+            </button>
+          )}
+
+          {isSeller && !hasTransaction && sellerHasSignaled && (
+            <span className="transaction-badge pending">
+              ⏳ Aguardando confirmação
+            </span>
+          )}
+
+          {isSeller && hasTransaction && (
+            <span className="transaction-badge completed">
+              ✓ {getCompletedLabel(listingDetails?.listingType)}
+            </span>
+          )}
+
+          {isBuyer && !hasTransaction && sellerHasSignaled && (
+            <button
+              className="transaction-action-btn buyer"
+              onClick={handleBuyerConfirmReceipt}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Confirmando...' : 'Confirmar recebimento'}
+            </button>
+          )}
+
+          {isBuyer && hasTransaction && !reviewSubmitted && (
+            <div className="rating-inline">
+              {[1, 2, 3, 4, 5].map(star => (
+                <button
+                  key={star}
+                  className={`star-btn ${star <= (hoverRating || selectedRating) ? 'filled' : ''}`}
+                  onMouseEnter={() => setHoverRating(star)}
+                  onMouseLeave={() => setHoverRating(0)}
+                  onClick={() => {
+                    setSelectedRating(star);
+                    handleSubmitReview(star);
+                  }}
+                  disabled={isSubmitting}
+                  aria-label={`${star} estrela${star > 1 ? 's' : ''}`}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+          )}
+
+          {isBuyer && hasTransaction && reviewSubmitted && (
+            <span className="transaction-badge reviewed">
+              ★ Avaliado
+            </span>
+          )}
         </div>
+
+        {showConfirmDialog && (
+          <div className="confirm-overlay" onClick={() => setShowConfirmDialog(false)}>
+            <div className="confirm-dialog" onClick={e => e.stopPropagation()}>
+              <p className="confirm-text">{getSellerConfirmQuestion(listingDetails?.listingType)}</p>
+              <p className="confirm-subtext">
+                Item: <strong>{chat?.item.name}</strong><br />
+                Para: <strong>{chat?.other_user.name}</strong>
+              </p>
+              <div className="confirm-actions">
+                <button
+                  className="confirm-btn cancel"
+                  onClick={() => setShowConfirmDialog(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancelar
+                </button>
+                <button
+                  className="confirm-btn confirm"
+                  onClick={handleSellerConfirm}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Enviando...' : 'Confirmar'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="messages-container">
           {[...messages].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map(msg => {
             const isMe = msg.sender_id === user?.id;

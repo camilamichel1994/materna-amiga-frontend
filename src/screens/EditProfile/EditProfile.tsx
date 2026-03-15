@@ -73,14 +73,14 @@ const EditProfile: React.FC = () => {
 
     setIsSaving(true);
     try {
-      const payload: { name?: string; avatarUrl?: string } = {};
+      const payload: { name?: string; avatar_url?: string } = {};
 
       if (trimmedName !== user.name) {
         payload.name = trimmedName;
       }
 
       if (avatarBase64) {
-        payload.avatarUrl = avatarBase64;
+        payload.avatar_url = avatarBase64;
       }
 
       if (Object.keys(payload).length === 0) {

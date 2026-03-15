@@ -4,11 +4,13 @@ import TopNav from '../../components/TopNav';
 import { LocationOn, Star, Edit, Inventory, Favorite } from '@mui/icons-material';
 import { getProfileService, getMeService, ProfileResponse, Review } from '../../services';
 import Avatar from '../../components/Avatar';
+import { useAccount } from '../../contexts/AccountContext';
 import './Profile.css';
 
 const Profile: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
+  const { user: currentUser } = useAccount();
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -140,16 +142,18 @@ const Profile: React.FC = () => {
           </div>
         </div>
 
-        <div className="profile-actions">
-          <button className="btn btn-action" onClick={() => navigate('/edit-profile')}>
-            <Edit />
-            <span>Editar perfil</span>
-          </button>
-          <button className="btn btn-action" onClick={() => navigate('/my-listings')}>
-            <Inventory />
-            <span>Meus anúncios</span>
-          </button>
-        </div>
+        {(!id || id === currentUser?.id) && (
+          <div className="profile-actions">
+            <button className="btn btn-action" onClick={() => navigate('/edit-profile')}>
+              <Edit />
+              <span>Editar perfil</span>
+            </button>
+            <button className="btn btn-action" onClick={() => navigate('/my-listings')}>
+              <Inventory />
+              <span>Meus anúncios</span>
+            </button>
+          </div>
+        )}
 
         {reviews.length > 0 && (
           <div className="reviews-section">

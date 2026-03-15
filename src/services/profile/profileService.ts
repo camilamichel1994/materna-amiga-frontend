@@ -32,7 +32,7 @@ export interface UpdateProfileInput {
   name?: string;
   location?: string;
   baby_age_range?: string;
-  avatarUrl?: string;
+  avatar_url?: string;
 }
 
 export interface CreateRatingInput {

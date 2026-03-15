@@ -85,6 +85,7 @@ export const createChatService = async (data: CreateChatInput): Promise<Chat> =>
 export const markChatAsReadService = async (chat_id: string): Promise<void> => {
   return apiRequest<void>(`/chats/${chat_id}/read`, {
     method: 'PUT',
+    body: JSON.stringify({}),
     requireAuth: true,
   });
 };
