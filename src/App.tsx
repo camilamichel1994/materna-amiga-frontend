@@ -25,6 +25,8 @@ import Exchange from "./screens/Exchange/Exchange";
 import Profile from "./screens/Profile/Profile";
 import MyListings from "./screens/MyListings/MyListings";
 import EditProfile from "./screens/EditProfile/EditProfile";
+import ForgotPassword from "./screens/ForgotPassword/ForgotPassword";
+import ResetPassword from "./screens/ResetPassword/ResetPassword";
 
 const App: React.FC = () => {
   return (
@@ -35,6 +37,8 @@ const App: React.FC = () => {
           <Route path="/" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/feed" element={<Feed />} />
           <Route path="/item/:id" element={<ItemDetail />} />
           <Route path="/add-item" element={<AddItem />} />

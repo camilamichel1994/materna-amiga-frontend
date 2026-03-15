@@ -191,7 +191,7 @@ const Login: React.FC = () => {
               <div className="form-group">
                 <div className="password-label-row">
                   <label htmlFor="password">Senha</label>
-                  <button type="button" className="forgot-password">Esqueceu a senha?</button>
+                  <button type="button" className="forgot-password" onClick={() => navigate('/forgot-password')}>Esqueceu a senha?</button>
                 </div>
                 <input
                   type="password"
