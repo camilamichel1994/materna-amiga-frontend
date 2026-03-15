@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TopNav from '../../components/TopNav';
 import { Favorite, FavoriteBorder, ExpandMore, ExpandLess, LocationOn, Person, Star, Chat } from '@mui/icons-material';
-import { getListingByIdService, getSimilarListingsService, addFavoriteService, removeFavoriteService, getFavoritesService, createChatService, getMeService, Listing, getTransactionsService } from '../../services';
+import { getListingByIdService, getSimilarListingsService, addFavoriteService, removeFavoriteService, getFavoritesService, createChatService, getChatsService, getMeService, Listing, getTransactionsService } from '../../services';
 import { formatCurrency, getImageUrl, getListingTypeLabel } from '../../utils/format';
 import './ItemDetail.css';
 import { useAccount } from '../../contexts/AccountContext';
@@ -21,6 +21,7 @@ const ItemDetail: React.FC = () => {
   const [messageText, setMessageText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isSold, setIsSold] = useState(false);
+  const [existingChatId, setExistingChatId] = useState<string | null>(null);
   const { user: currentUser } = useAccount();
 
   useEffect(() => {
@@ -29,8 +30,19 @@ const ItemDetail: React.FC = () => {
       loadSimilarItems();
       checkIfFavorite(id);
       checkIfSold(id);
+      checkExistingChat(id);
     }
   }, [id]);
+
+  const checkExistingChat = async (listingId: string) => {
+    try {
+      const chats = await getChatsService();
+      const existing = chats.find(c => c.item.id === listingId);
+      setExistingChatId(existing?.id ?? null);
+    } catch {
+      // ignore - user may not be logged in
+    }
+  };
 
   const checkIfSold = async (listingId: string) => {
     try {
@@ -308,6 +320,10 @@ const ItemDetail: React.FC = () => {
                 <div className="item-unavailable-notice">
                   Este item não está mais disponível
                 </div>
+              ) : existingChatId ? (
+                <button type="button" className="btn btn-buy" onClick={() => navigate('/chat', { state: { openChatId: existingChatId } })}>
+                  Ir para conversa
+                </button>
               ) : (
                 <button type="button" className="btn btn-buy" onClick={openMessageModal}>
                   Enviar mensagem
