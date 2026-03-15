@@ -5,6 +5,7 @@ import TopNav from '../../components/TopNav';
 import { CameraAlt, ArrowBack } from '@mui/icons-material';
 import { useAccount } from '../../contexts/AccountContext';
 import { updateProfileService } from '../../services';
+import Avatar from '../../components/Avatar';
 import './EditProfile.css';
 
 const EditProfile: React.FC = () => {
@@ -120,11 +121,7 @@ const EditProfile: React.FC = () => {
             <div className="avatar-section">
               <div className="avatar-wrapper" onClick={handleAvatarClick}>
                 <div className="avatar-display">
-                  {avatarPreview ? (
-                    <img src={avatarPreview} alt={name} className="avatar-image" />
-                  ) : (
-                    <span className="avatar-initial">{initial}</span>
-                  )}
+                  <Avatar src={avatarPreview} name={name} imgClassName="avatar-image" />
                 </div>
                 <div className="avatar-overlay">
                   <CameraAlt className="avatar-overlay-icon" />

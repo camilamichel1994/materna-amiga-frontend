@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Person from '@mui/icons-material/Person';
 import Logout from '@mui/icons-material/Logout';
 import { useAccount } from '../contexts/AccountContext';
+import Avatar from './Avatar';
 import './TopNav.css';
 
 const TopNav: React.FC = () => {
@@ -16,8 +17,6 @@ const TopNav: React.FC = () => {
   const displayName = user?.name || 'Usuária';
   const displayEmail = user?.email || '';
   const avatarUrl = user?.avatarUrl;
-
-  const initial = displayName.charAt(0).toUpperCase();
 
   const handleLogout = async () => {
     setShowUserMenu(false);
@@ -57,22 +56,14 @@ const TopNav: React.FC = () => {
               onClick={() => setShowUserMenu(!showUserMenu)}
             >
               <div className="user-avatar">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="" className="user-avatar-img" />
-                ) : (
-                  initial
-                )}
+                <Avatar src={avatarUrl} name={displayName} imgClassName="user-avatar-img" />
               </div>
             </button>
             {showUserMenu && (
               <div className="user-menu-dropdown">
                 <div className="user-menu-header">
                   <div className="user-avatar-large">
-                    {avatarUrl ? (
-                      <img src={avatarUrl} alt="" className="user-avatar-img-large" />
-                    ) : (
-                      initial
-                    )}
+                    <Avatar src={avatarUrl} name={displayName} imgClassName="user-avatar-img-large" />
                   </div>
                   <div className="user-info">
                     <div className="user-name">{displayName}</div>

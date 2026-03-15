@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import TopNav from '../../components/TopNav';
 import { LocationOn, Star, Edit, Inventory, Favorite } from '@mui/icons-material';
 import { getProfileService, getMeService, ProfileResponse, Review } from '../../services';
+import Avatar from '../../components/Avatar';
 import './Profile.css';
 
 const Profile: React.FC = () => {
@@ -100,11 +101,7 @@ const Profile: React.FC = () => {
         <div className="profile-header-card">
           <div className="profile-header">
             <div className="profile-avatar">
-              {profile.avatarUrl ? (
-                <img src={profile.avatarUrl} alt={profile.name || ''} />
-              ) : (
-                (profile.name || '?').charAt(0)
-              )}
+              <Avatar src={profile.avatarUrl} name={profile.name || ''} />
             </div>
             <h1 className="profile-name">{profile.name || 'Usuário'}</h1>
             <div className="profile-info">

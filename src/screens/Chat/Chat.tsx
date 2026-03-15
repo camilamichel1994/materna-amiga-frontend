@@ -4,6 +4,7 @@ import TopNav from '../../components/TopNav';
 import { getChatsService, getChatMessagesService, sendMessageService, markChatAsReadService, Chat as ChatType, Message } from '../../services';
 import './Chat.css';
 import { useAccount } from '../../contexts/AccountContext';
+import Avatar from '../../components/Avatar';
 
 const Chat: React.FC = () => {
   const location = useLocation();
@@ -185,11 +186,7 @@ const Chat: React.FC = () => {
                 tabIndex={0}
               >
                 <div className="chat-avatar" aria-hidden>
-                  {chat.other_user.avatar_url ? (
-                    <img src={chat.other_user.avatar_url} alt="" />
-                  ) : (
-                    <span>{chat.other_user.name.charAt(0).toUpperCase()}</span>
-                  )}
+                  <Avatar src={chat.other_user.avatar_url} name={chat.other_user.name} />
                 </div>
                 <div className="chat-info">
                   <div className="chat-item-name">{chat.item.name}</div>
