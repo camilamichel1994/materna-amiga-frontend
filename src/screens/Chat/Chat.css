@@ -212,6 +212,16 @@
   margin-top: 2px;
 }
 
+.chat-item.chat-item-link {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.chat-item.chat-item-link:hover {
+  color: var(--medium-lavender);
+}
+
 .messages-container {
   flex: 1;
   overflow-y: auto;

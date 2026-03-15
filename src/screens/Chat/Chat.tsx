@@ -259,7 +259,12 @@ const Chat: React.FC = () => {
           </button>
           <div className="chat-header-info">
             <div className="chat-name">{chat?.other_user.name}</div>
-            <div className="chat-item">{chat?.item.name}</div>
+            <div
+              className="chat-item chat-item-link"
+              onClick={() => chat && navigate(`/item/${chat.item.id}`)}
+            >
+              {chat?.item.name}
+            </div>
           </div>
 
           {isSeller && !hasTransaction && !sellerHasSignaled && (
