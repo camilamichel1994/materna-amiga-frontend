@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TopNav from '../../components/TopNav';
 import { Favorite, FavoriteBorder, ExpandMore, ExpandLess, LocationOn, Person, Star, Chat } from '@mui/icons-material';
-import { getListingByIdService, getSimilarListingsService, addFavoriteService, removeFavoriteService, getFavoritesService, createChatService, getMeService, Listing } from '../../services';
+import { getListingByIdService, getSimilarListingsService, addFavoriteService, removeFavoriteService, getFavoritesService, createChatService, getMeService, Listing, getTransactionsService } from '../../services';
 import { formatCurrency, getImageUrl, getListingTypeLabel } from '../../utils/format';
 import './ItemDetail.css';
 import { useAccount } from '../../contexts/AccountContext';
@@ -20,6 +20,7 @@ const ItemDetail: React.FC = () => {
   const [messageModalOpen, setMessageModalOpen] = useState(false);
   const [messageText, setMessageText] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [isSold, setIsSold] = useState(false);
   const { user: currentUser } = useAccount();
 
   useEffect(() => {
@@ -27,8 +28,19 @@ const ItemDetail: React.FC = () => {
       loadItem();
       loadSimilarItems();
       checkIfFavorite(id);
+      checkIfSold(id);
     }
   }, [id]);
+
+  const checkIfSold = async (listingId: string) => {
+    try {
+      const txResponse = await getTransactionsService(1, 100);
+      const existing = txResponse.items.find(t => t.listing.id === listingId);
+      setIsSold(!!existing);
+    } catch {
+      // ignore - user may not be logged in
+    }
+  };
 
   const checkIfFavorite = async (itemId: string) => {
     try {
@@ -292,9 +304,15 @@ const ItemDetail: React.FC = () => {
             )}
 
             {!isOwnListing && (
-              <button type="button" className="btn btn-buy" onClick={openMessageModal}>
-                Enviar mensagem
-              </button>
+              isSold ? (
+                <div className="item-unavailable-notice">
+                  Este item não está mais disponível
+                </div>
+              ) : (
+                <button type="button" className="btn btn-buy" onClick={openMessageModal}>
+                  Enviar mensagem
+                </button>
+              )
             )}
           </div>
         </div>
