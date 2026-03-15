@@ -38,7 +38,7 @@ const TopNav: React.FC = () => {
           <Link to="/feed" className={`nav-link ${isActive('/feed') ? 'active' : ''}`}>
             Anúncios
           </Link>
-          <Link to="/wishlist" className={`nav-link ${isActive('/wishlist') ? 'active' : ''}`}>
+          <Link to="/favorites" className={`nav-link ${isActive('/favorites') ? 'active' : ''}`}>
             Favoritos
           </Link>
           <Link to="/add-item" className={`nav-link ${isActive('/add-item') ? 'active' : ''}`}>
@@ -84,7 +84,7 @@ const TopNav: React.FC = () => {
                     <Person className="menu-icon-svg" fontSize="small" />
                     <span>Perfil</span>
                   </Link>
-                  <Link to="/wishlist" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
+                  <Link to="/favorites" className="user-menu-item" onClick={() => setShowUserMenu(false)}>
                     <Favorite className="menu-icon-svg" fontSize="small" />
                     <span>Favoritos</span>
                   </Link>

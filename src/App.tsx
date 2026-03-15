@@ -19,7 +19,7 @@ import Register from "./screens/Register/Register";
 import Feed from "./screens/Feed/Feed";
 import ItemDetail from "./screens/ItemDetail/ItemDetail";
 import AddItem from "./screens/AddItem/AddItem";
-import Wishlist from "./screens/Wishlist/Wishlist";
+import Favorites from "./screens/Wishlist/Wishlist";
 import Chat from "./screens/Chat/Chat";
 import Exchange from "./screens/Exchange/Exchange";
 import Profile from "./screens/Profile/Profile";
@@ -37,7 +37,7 @@ const App: React.FC = () => {
           <Route path="/feed" element={<Feed />} />
           <Route path="/item/:id" element={<ItemDetail />} />
           <Route path="/add-item" element={<AddItem />} />
-          <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/exchange" element={<Exchange />} />
           <Route path="/profile" element={<Profile />} />

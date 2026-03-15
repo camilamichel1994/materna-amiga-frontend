@@ -12,7 +12,7 @@ export interface FavoritesResponse {
 }
 
 export const getFavoritesService = async (): Promise<Favorite[]> => {
-  const response = await apiRequest<FavoritesResponse>('/wishlist', {
+  const response = await apiRequest<FavoritesResponse>('/favorites', {
     method: 'GET',
     requireAuth: true,
   });
@@ -20,7 +20,7 @@ export const getFavoritesService = async (): Promise<Favorite[]> => {
 };
 
 export const addFavoriteService = async (item_id: string): Promise<Favorite> => {
-  return apiRequest<Favorite>('/wishlist', {
+  return apiRequest<Favorite>('/favorites', {
     method: 'POST',
     body: JSON.stringify({ item_id }),
     requireAuth: true,
@@ -28,8 +28,9 @@ export const addFavoriteService = async (item_id: string): Promise<Favorite> => 
 };
 
 export const removeFavoriteService = async (item_id: string): Promise<void> => {
-  return apiRequest<void>(`/wishlist/${item_id}`, {
+  return apiRequest<void>(`/favorites/${item_id}`, {
     method: 'DELETE',
+    body: JSON.stringify({}),
     requireAuth: true,
   });
 };
