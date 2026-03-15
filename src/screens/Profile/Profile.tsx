@@ -138,7 +138,7 @@ const Profile: React.FC = () => {
               <Favorite />
             </div>
             <div className="stat-value">{profile.total_sales || 0}</div>
-            <div className="stat-label">Vendas</div>
+            <div className="stat-label">Transações</div>
           </div>
         </div>
 
