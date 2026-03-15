@@ -307,7 +307,7 @@
   max-height: 44px !important;
   padding: 0 16px 0 44px;
   border: 1px solid var(--border-gray);
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 500;
   line-height: 1;
